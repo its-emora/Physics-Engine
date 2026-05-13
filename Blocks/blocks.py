@@ -32,7 +32,7 @@ class BLOCK(pygame.sprite.Sprite):
         super().__init__()
         self.colour = random.choice(block_textures)
 
-        self.image = pygame.image.load(f"assets/images/{self.colour}.png")
+        self.image = pygame.image.load(f"Blocks/assets/images/{self.colour}.png")
         self.rect = self.image.get_rect()
         self.rect.bottomright = (x,y)
 
