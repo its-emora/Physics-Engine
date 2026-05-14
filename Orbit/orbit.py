@@ -11,6 +11,9 @@ root = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
 clock = pygame.time.Clock()
 
 vector = pygame.math.Vector2
+group = pygame.sprite.Group()
+
+# n
 
 #---- CONSTANTS ----# 
 display_info = pygame.display.Info()
@@ -43,9 +46,6 @@ class SUB_BODY(pygame.sprite.Sprite):
 
     def update(self):
         self.position += vector(0,10)
-        
-
-
 
 #---- GAME LOOP----#
 run_loop = True
@@ -56,8 +56,6 @@ while run_loop:
     keys_pressed = pygame.key.get_pressed()
     if keys_pressed[pygame.K_ESCAPE]:
         run_loop = False
-
-    
         
 pygame.quit()
 print(sim_coordinates(0,0))
