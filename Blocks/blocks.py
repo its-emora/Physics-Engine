@@ -43,8 +43,8 @@ class BLOCK(pygame.sprite.Sprite):
         self.acceleration = vector(0,0)
 
         self.HORIZONTAL_ACCELERATION = 1
-        self.FRICTION_COEFFICIENT = 0.1
-        self.GRAVITATIONAL_CONSTANT = 0.5
+        self.FRICTION_COEFFICIENT = 0.00
+        self.GRAVITATIONAL_CONSTANT = 0.2
 
     def update(self):
         grabbed = False
@@ -53,16 +53,16 @@ class BLOCK(pygame.sprite.Sprite):
         mouse_pos = pygame.mouse.get_pos()
         self.acceleration = vector(0,0)
         
-        if self.position.x-64 > mouse_pos[0] > self.position.x and self.position.y-64 > mouse_pos[1] > self.position.y:
-            possible_grabbed = False
-            if not mouse_pressed[0]:
-                grabbed = False
-        else:
+        if self.position.x-64 < mouse_pos[0] < self.position.x and self.position.y-64 < mouse_pos[1] < self.position.y:
             possible_grabbed = True
             if mouse_pressed[0] and possible_grabbed:
                 self.position = vector(mouse_pos[0]+32,mouse_pos[1]+32)
                 self.velocity = vector(0,0)
                 grabbed = True
+        else:
+            possible_grabbed = False
+            if not mouse_pressed[0]:
+                grabbed = False
             
 
         if not grabbed:
