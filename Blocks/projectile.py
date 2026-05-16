@@ -15,7 +15,7 @@ angle_input_selected = False
 vector = pygame.math.Vector2
 display_info = pygame.display.Info()
 screen_width, screen_height = display_info.current_w, display_info.current_h
-# Groups
+# Groupss
 blocks_group = pygame.sprite.Group()
 # Arrays
 block_textures = ["blue_block","red_block"]

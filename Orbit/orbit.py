@@ -13,8 +13,6 @@ clock = pygame.time.Clock()
 vector = pygame.math.Vector2
 group = pygame.sprite.Group()
 
-# n
-
 #---- CONSTANTS ----# 
 display_info = pygame.display.Info()
 screen_width, screen_height = display_info.current_w, display_info.current_h
@@ -58,4 +56,3 @@ while run_loop:
         run_loop = False
         
 pygame.quit()
-print(sim_coordinates(0,0))
