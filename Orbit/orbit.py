@@ -32,19 +32,6 @@ class MAIN_BODY(pygame.sprite.Sprite):
     def __init__(self,x,y):
         pass
 
-class SUB_BODY(pygame.sprite.Sprite):
-    def __init__(self,x,y):
-        self.image = pygame.image.load("Blocks/assets/images/red_block.png")
-        self.rect = self.image.get_rect()
-        self.rect.center = (x,y)
-
-        self.position = vector(x,y)
-        self.velocity = vector(0,10)
-        self.acceleration = vector(0,0)
-
-    def update(self):
-        self.position += vector(0,10)
-
 #---- GAME LOOP----#
 run_loop = True
 while run_loop:

@@ -2,20 +2,28 @@ import pygame
 import pygame_textinput
 import random as r
 import math as m
+import block as block_class
 
 pygame.init()
 
+airres_input = pygame_textinput.TextInputVisualizer()
+friction_input = pygame_textinput.TextInputVisualizer()
+restitution_input = pygame_textinput.TextInputVisualizer()
 velocity_input = pygame_textinput.TextInputVisualizer()
 angle_input = pygame_textinput.TextInputVisualizer()
+
 
 # Bools
 velocity_input_selected = False
 angle_input_selected = False
+airres_input_selected = False
+rest_input_selected = False
+fric_input_selected = False
 # Pygame
 vector = pygame.math.Vector2
 display_info = pygame.display.Info()
 screen_width, screen_height = display_info.current_w, display_info.current_h
-# Groupss
+# Groups
 blocks_group = pygame.sprite.Group()
 # Arrays
 block_textures = ["blue_block","red_block"]
@@ -24,67 +32,19 @@ WHITE = (200,200,200)
 BLACK = (20,20,20)
 # Text
 font = pygame.font.Font("Blocks/assets/fonts/menu_font.ttf",24)
-velocity_text = font.render("Velocity:", True, BLACK)
+velocity_text = font.render("Initial Velocity:", True, BLACK)
 vel_rect = velocity_text.get_rect(topleft=(25,100))
-angle_text = font.render("Angle:", True, BLACK)
+angle_text = font.render("Angle of fire:", True, BLACK)
 ang_rect = angle_text.get_rect(topleft=(25,125))
-
-class BLOCK(pygame.sprite.Sprite):
-    def __init__(self,velocity,angle):
-        super().__init__()
-        self.colour = r.choice(block_textures)
-
-        self.image = pygame.image.load(f"Blocks/assets/images/{self.colour}.png")
-        self.rect = self.image.get_rect()
-        self.rect.bottomright = (55,1075)
-
-        self.grabbed = False
-
-        self.position = vector(50,1080)
-        self.velocity = vector(velocity*m.cos(m.radians(angle)),-velocity*m.sin(m.radians(angle)))
-        self.acceleration = vector(0,0)
-
-        self.HORIZONTAL_ACCELERATION = 2
-        self.FRICTION_COEFFICIENT = 0.08
-        self.GRAVITATIONAL_CONSTANT = 0.5
-        self.RESTITUTION_COEFFICIENT = -0.9
-
-
-    def update(self):
-        self.acceleration = vector(0,self.GRAVITATIONAL_CONSTANT)
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_a]:
-            self.acceleration.x = -1 * self.HORIZONTAL_ACCELERATION
-        if keys[pygame.K_d]:
-            self.acceleration.x = self.HORIZONTAL_ACCELERATION
-
-        if self.position.y >= screen_height:
-            self.FRICTION_COEFFICIENT = 0.01
-        else:
-            self.FRICTION_COEFFICIENT = 0
-
-        self.acceleration.x -= self.velocity.x * self.FRICTION_COEFFICIENT
-        self.velocity += self.acceleration
-        self.position += self.velocity + self.acceleration / 2
-
-        if self.position.y >= screen_height:
-            self.position.y = screen_height
-            self.velocity.y *= self.RESTITUTION_COEFFICIENT
-        if self.position.y <= 64:
-            self.position.y = 64
-            self.velocity.y *= self.RESTITUTION_COEFFICIENT
-        if self.position.x >= screen_width:
-                self.position.x = screen_width
-                self.velocity.x *= self.RESTITUTION_COEFFICIENT
-        if self.position.x <= 64:
-                self.position.x = 64
-                self.velocity.x *= self.RESTITUTION_COEFFICIENT
-        self.rect.bottomright = self.position
+restitution_text = font.render("Coefficient of Restitution:",True, BLACK)
+rest_rect = restitution_text.get_rect(topleft=(25,75))
+friction_text = font.render("Coefficient of Friction (Ground):", True, BLACK)
+fric_rect = friction_text.get_rect(topleft=(25,50))
+air_resistance_text = font.render("Coefficient of Friction (Air):", True, BLACK)
+air_res_rect = friction_text.get_rect(topleft=(25,25))
 
 root = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
 clock = pygame.time.Clock()
-
 fire = False
 
 running = True
@@ -94,31 +54,28 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
+            velocity_input_selected, angle_input_selected, airres_input_selected, fric_input_selected, rest_input_selected = False,False,False,False,False
             if vel_rect.collidepoint(event.pos):
                 velocity_input_selected = True
-                angle_input_selected = False
             elif ang_rect.collidepoint(event.pos):
                 angle_input_selected = True
-                velocity_input_selected = False
-            else:
-                velocity_input_selected = False
-                angle_input_selected = False
+            elif air_res_rect.collidepoint(event.pos):
+                airres_input_selected = True
+            elif rest_rect.collidepoint(event.pos):
+                rest_input_selected = True
+            elif fric_rect.collidepoint(event.pos):
+                fric_input_selected = True
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
             if event.key == pygame.K_f and not velocity_input_selected and not angle_input_selected:
                 fire = True
                 try:
-                    block = BLOCK(float(velocity_input.value),float(angle_input.value))
+                    block = block_class.BLOCK(float(velocity_input.value),float(angle_input.value),
+                                  float(restitution_input.value),float(friction_input.value),float(airres_input.value))
                     blocks_group.add(block)
                 except:
                     pass
-            if event.key == pygame.K_RETURN:
-                velocity_input_selected = False
-                angle_input_selected = False
-            if event.key == pygame.K_c:
-                velocity_input_selected = False
-                angle_input_selected = True
             if event.key == pygame.K_DELETE:
                 for block in blocks_group:
                     blocks_group.remove(block)
@@ -133,16 +90,31 @@ while running:
 
     velocity_input.cursor_visable = False
 
+    if rest_input_selected:
+        restitution_input.update(events)
+    
+    if fric_input_selected:
+        friction_input.update(events)
+
+    if airres_input_selected:
+        airres_input.update(events)
+
     if velocity_input_selected:
         velocity_input.update(events)
 
     if angle_input_selected:
         angle_input.update(events)
 
+    root.blit(air_resistance_text,air_res_rect)
+    root.blit(friction_text,fric_rect)
+    root.blit(restitution_text,rest_rect)    
     root.blit(velocity_text,vel_rect)
     root.blit(angle_text,ang_rect)
-    root.blit(velocity_input.surface,(130,100))
-    root.blit(angle_input.surface,(130,125))
+    root.blit(velocity_input.surface,(450,100))
+    root.blit(angle_input.surface,(450,125))
+    root.blit(restitution_input.surface,(450,75))
+    root.blit(airres_input.surface,(450,25))
+    root.blit(friction_input.surface,(450,50))
 
     if fire:
         blocks_group.update()
