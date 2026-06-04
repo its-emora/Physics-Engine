@@ -2,7 +2,7 @@ import pygame
 import pygame_textinput
 import random as r
 import math as m
-import block as block_class
+import block_class
 
 pygame.init()
 
