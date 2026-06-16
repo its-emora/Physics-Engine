@@ -12,7 +12,6 @@ restitution_input = pygame_textinput.TextInputVisualizer()
 velocity_input = pygame_textinput.TextInputVisualizer()
 angle_input = pygame_textinput.TextInputVisualizer()
 
-
 # Bools
 velocity_input_selected = False
 angle_input_selected = False
@@ -27,6 +26,7 @@ screen_width, screen_height = display_info.current_w, display_info.current_h
 blocks_group = pygame.sprite.Group()
 # Arrays
 block_textures = ["blue_block","red_block"]
+accepted_inputs = [pygame.K_1,pygame.K_2,pygame.K_3,pygame.K_4,pygame.K_5,pygame.K_6,pygame.K_7,pygame.K_8,pygame.K_9,pygame.K_0,pygame.K_PERIOD,pygame.K_BACKSPACE]
 # Colours
 WHITE = (200,200,200)
 BLACK = (20,20,20)
@@ -46,6 +46,7 @@ air_res_rect = friction_text.get_rect(topleft=(25,25))
 root = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
 clock = pygame.time.Clock()
 fire = False
+valid_input = False
 
 running = True
 while running:
@@ -79,6 +80,10 @@ while running:
             if event.key == pygame.K_DELETE:
                 for block in blocks_group:
                     blocks_group.remove(block)
+            if event.key in accepted_inputs:
+                valid_input = True
+            else:
+                valid_input = False
 
     delta_time = clock.tick(60)/1000
 
@@ -90,20 +95,21 @@ while running:
 
     velocity_input.cursor_visable = False
 
-    if rest_input_selected:
-        restitution_input.update(events)
-    
-    if fric_input_selected:
-        friction_input.update(events)
+    if valid_input:
+        if rest_input_selected:
+            restitution_input.update(events)
+        
+        if fric_input_selected:
+            friction_input.update(events)
 
-    if airres_input_selected:
-        airres_input.update(events)
+        if airres_input_selected:
+            airres_input.update(events)
 
-    if velocity_input_selected:
-        velocity_input.update(events)
+        if velocity_input_selected:
+            velocity_input.update(events)
 
-    if angle_input_selected:
-        angle_input.update(events)
+        if angle_input_selected:
+            angle_input.update(events)
 
     root.blit(air_resistance_text,air_res_rect)
     root.blit(friction_text,fric_rect)
